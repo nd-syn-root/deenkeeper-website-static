@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asma ul Husna - Islamic Dashboard</title>
+
+    <!-- Google Fonts: Poppins & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* --- 1. Theming and Base Styles --- */
+        :root {
+            --primary-color: #264653; /* Charcoal Blue */
+            --primary-dark: #1a3038;
+            --secondary-color: #e9c46a; /* Soft Gold */
+            --background-default: #f8f9fa;
+            --background-paper: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-on-primary: #ffffff;
+            --shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --sidebar-width: 240px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-default);
+            color: var(--text-primary);
+        }
+
+        /* --- 2. Main Layout --- */
+        .app-container {
+            display: flex;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            margin-left: var(--sidebar-width); /* Space for desktop sidebar */
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 64px;
+            background-color: var(--background-paper);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+        }
+
+        .top-bar .menu-button {
+            display: none; /* Hidden on desktop */
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        /* This pushes content below the fixed top-bar */
+        .toolbar-spacer {
+            height: 64px;
+        }
+
+        /* --- 3. Sidebar / Drawer --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-dark);
+            color: var(--text-on-primary);
+            z-index: 1200;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            height: 64px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-on-primary);
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .nav-item .material-icons {
+            margin-right: 24px;
+        }
+
+        /* --- 4. Content Styles --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: linear-gradient(var(--background-paper), var(--background-paper)) padding-box, 
+                      linear-gradient(160deg, #e9c46a40, #26465360) border-box;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            position: relative; /* Needed for copy button positioning */
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 12px 32px rgba(38, 70, 83, 0.08);
+        }
+
+        .card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .asma-number {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .asma-arabic {
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .asma-transliteration {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .asma-meaning {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 28px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        /* Copy Button Styles */
+        .copy-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        .card:hover .copy-btn {
+            background-color: rgba(0,0,0,0.08);
+        }
+        .copy-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+        }
+        .copy-feedback {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Search Bar Styles */
+        .search-bar-wrapper {
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 50px; /* Increased padding for better spacing */
+            border-radius: 12px;
+            border: none; /* Removed border for a cleaner look */
+            font-size: 1rem;
+            background-color: #f0f2f5; /* Slightly different background */
+            transition: box-shadow 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(38, 70, 83, 0.1);
+        }
+        .search-input::placeholder {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-secondary);
+        }
+        .search-bar-wrapper .material-icons:not(.search-clear-btn) {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .search-clear-btn {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+        .no-results {
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        /* --- 5. Mobile Responsiveness --- */
+        .mobile-drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+        }
+        
+        .bottom-nav {
+            display: none; /* Hidden on desktop */
+        }
+
+        /* Styles for screens smaller than 900px */
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0; /* Full width content */
+                padding-bottom: 80px; /* Space for bottom nav */
+            }
+
+            .top-bar {
+                left: 0; /* Full width top bar */
+            }
+
+            .top-bar .menu-button {
+                display: block; /* Show hamburger menu */
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-drawer-backdrop.open {
+                display: block;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 56px;
+                background-color: var(--background-paper);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-decoration: none;
+            }
+            
+            .bottom-nav-item.active {
+                color: var(--primary-color);
+            }
+
+            .bottom-nav-item .material-icons {
+                margin-bottom: 4px;
+            }
+        }
+        
+        /* Further adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px;
+                padding-bottom: 80px;
+            }
+            .top-bar {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar (Desktop) / Drawer (Mobile) -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Guidance</h2>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="index.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+                <li class="nav-item"><a href="surahs.html"><i class="material-icons">menu_book</i> Surahs</a></li>
+                <li class="nav-item"><a href="dhikr.html"><i class="material-icons">all_inclusive</i> Dhikr</a></li>
+                <li class="nav-item"><a href="duas.html"><i class="material-icons">pan_tool</i> Duas</a></li>
+                <li class="nav-item"><a href="asma-ul-husna.html" class="active"><i class="material-icons">view_module</i> Asma ul Husna</a></li>
+            </ul>
+        </nav>
+
+        <!-- Backdrop for mobile drawer -->
+        <div class="mobile-drawer-backdrop" id="backdrop"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+                <h1>Asma ul Husna</h1>
+            </header>
+            <div class="toolbar-spacer"></div>
+
+            <!-- Search Bar -->
+            <div class="search-bar-wrapper">
+                <i class="material-icons">search</i>
+                <input type="text" id="search-input" class="search-input" placeholder="Search for a Name...">
+                <span class="material-icons search-clear-btn" id="search-clear-btn">close</span>
+            </div>
+
+            <!-- Asma ul Husna Section -->
+            <section>
+                <h2 class="section-title">The 99 Names of Allah</h2>
+                <div id="content-grid" class="grid-container">
+                    <!-- Names will be dynamically inserted here if using a more advanced JS approach, -->
+                    <!-- but for pure HTML, we list them out. -->
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">1</div>
+                        <div class="asma-arabic">ٱلْرَّحْمَـٰنُ</div>
+                        <div class="asma-transliteration">AR-RAHMAN</div>
+                        <div class="asma-meaning">The Beneficent</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">2</div>
+                        <div class="asma-arabic">ٱلْرَّحِيْمُ</div>
+                        <div class="asma-transliteration">AR-RAHEEM</div>
+                        <div class="asma-meaning">The Merciful</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">3</div>
+                        <div class="asma-arabic">ٱلْمَلِكُ</div>
+                        <div class="asma-transliteration">AL-MALIK</div>
+                        <div class="asma-meaning">The King</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">4</div>
+                        <div class="asma-arabic">ٱلْقُدُّوسُ</div>
+                        <div class="asma-transliteration">AL-QUDDUS</div>
+                        <div class="asma-meaning">The Most Holy</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">5</div>
+                        <div class="asma-arabic">ٱلْسَّلَامُ</div>
+                        <div class="asma-transliteration">AS-SALAM</div>
+                        <div class="asma-meaning">The Source of Peace</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">6</div>
+                        <div class="asma-arabic">ٱلْمُؤْمِنُ</div>
+                        <div class="asma-transliteration">AL-MU'MIN</div>
+                        <div class="asma-meaning">The Guardian of Faith</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">7</div>
+                        <div class="asma-arabic">ٱلْمُهَيْمِنُ</div>
+                        <div class="asma-transliteration">AL-MUHAYMIN</div>
+                        <div class="asma-meaning">The Protector</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">8</div>
+                        <div class="asma-arabic">ٱلْعَزِيزُ</div>
+                        <div class="asma-transliteration">AL-AZEEZ</div>
+                        <div class="asma-meaning">The Mighty</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">9</div>
+                        <div class="asma-arabic">ٱلْجَبَّارُ</div>
+                        <div class="asma-transliteration">AL-JABBAR</div>
+                        <div class="asma-meaning">The Compeller</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">10</div>
+                        <div class="asma-arabic">ٱلْمُتَكَبِّرُ</div>
+                        <div class="asma-transliteration">AL-MUTAKABBIR</div>
+                        <div class="asma-meaning">The Majestic</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">11</div>
+                        <div class="asma-arabic">ٱلْخَالِقُ</div>
+                        <div class="asma-transliteration">AL-KHAALIQ</div>
+                        <div class="asma-meaning">The Creator</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">12</div>
+                        <div class="asma-arabic">ٱلْبَارِئُ</div>
+                        <div class="asma-transliteration">AL-BAARI'</div>
+                        <div class="asma-meaning">The Evolver</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">13</div>
+                        <div class="asma-arabic">ٱلْمُصَوِّرُ</div>
+                        <div class="asma-transliteration">AL-MUSAWWIR</div>
+                        <div class="asma-meaning">The Fashioner</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">14</div>
+                        <div class="asma-arabic">ٱلْغَفَّارُ</div>
+                        <div class="asma-transliteration">AL-GHAFFAR</div>
+                        <div class="asma-meaning">The Great Forgiver</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">15</div>
+                        <div class="asma-arabic">ٱلْقَهَّارُ</div>
+                        <div class="asma-transliteration">AL-QAHHAR</div>
+                        <div class="asma-meaning">The Subduer</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">16</div>
+                        <div class="asma-arabic">ٱلْوَهَّابُ</div>
+                        <div class="asma-transliteration">AL-WAHHAAB</div>
+                        <div class="asma-meaning">The Giver of All</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">17</div>
+                        <div class="asma-arabic">ٱلْرَّزَّاقُ</div>
+                        <div class="asma-transliteration">AR-RAZZAAQ</div>
+                        <div class="asma-meaning">The Sustainer</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">18</div>
+                        <div class="asma-arabic">ٱلْفَتَّاحُ</div>
+                        <div class="asma-transliteration">AL-FATTAAH</div>
+                        <div class="asma-meaning">The Opener</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">19</div>
+                        <div class="asma-arabic">ٱلْعَلِيمُ</div>
+                        <div class="asma-transliteration">AL-'ALEEM</div>
+                        <div class="asma-meaning">The Knower of All</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">20</div>
+                        <div class="asma-arabic">ٱلْقَابِضُ</div>
+                        <div class="asma-transliteration">AL-QAABID</div>
+                        <div class="asma-meaning">The Constrictor</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">21</div>
+                        <div class="asma-arabic">ٱلْبَاسِطُ</div>
+                        <div class="asma-transliteration">AL-BAASIT</div>
+                        <div class="asma-meaning">The Reliever</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">22</div>
+                        <div class="asma-arabic">ٱلْخَافِضُ</div>
+                        <div class="asma-transliteration">AL-KHAAFIDH</div>
+                        <div class="asma-meaning">The Abaser</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">23</div>
+                        <div class="asma-arabic">ٱلْرَّافِعُ</div>
+                        <div class="asma-transliteration">AR-RAAFI'</div>
+                        <div class="asma-meaning">The Exalter</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">24</div>
+                        <div class="asma-arabic">ٱلْمُعِزُّ</div>
+                        <div class="asma-transliteration">AL-MU'IZZ</div>
+                        <div class="asma-meaning">The Bestower of Honors</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">25</div>
+                        <div class="asma-arabic">ٱلْمُذِلُّ</div>
+                        <div class="asma-transliteration">AL-MUZIL</div>
+                        <div class="asma-meaning">The Humiliator</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">26</div>
+                        <div class="asma-arabic">ٱلْسَّمِيعُ</div>
+                        <div class="asma-transliteration">AS-SAMEE'</div>
+                        <div class="asma-meaning">The Hearer of All</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">27</div>
+                        <div class="asma-arabic">ٱلْبَصِيرُ</div>
+                        <div class="asma-transliteration">AL-BASEER</div>
+                        <div class="asma-meaning">The Seer of All</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">28</div>
+                        <div class="asma-arabic">ٱلْحَكَمُ</div>
+                        <div class="asma-transliteration">AL-HAKAM</div>
+                        <div class="asma-meaning">The Judge</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">29</div>
+                        <div class="asma-arabic">ٱلْعَدْلُ</div>
+                        <div class="asma-transliteration">AL-'ADL</div>
+                        <div class="asma-meaning">The Just</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">30</div>
+                        <div class="asma-arabic">ٱلْلَّطِيفُ</div>
+                        <div class="asma-transliteration">AL-LATEEF</div>
+                        <div class="asma-meaning">The Subtle One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">31</div>
+                        <div class="asma-arabic">ٱلْخَبِيرُ</div>
+                        <div class="asma-transliteration">AL-KHABEER</div>
+                        <div class="asma-meaning">The All-Aware</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">32</div>
+                        <div class="asma-arabic">ٱلْحَلِيمُ</div>
+                        <div class="asma-transliteration">AL-HALEEM</div>
+                        <div class="asma-meaning">The Forbearing</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">33</div>
+                        <div class="asma-arabic">ٱلْعَظِيمُ</div>
+                        <div class="asma-transliteration">AL-'AZEEM</div>
+                        <div class="asma-meaning">The Magnificent</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">34</div>
+                        <div class="asma-arabic">ٱلْغَفُورُ</div>
+                        <div class="asma-transliteration">AL-GHAFOOR</div>
+                        <div class="asma-meaning">The Forgiver and Hider of Faults</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">35</div>
+                        <div class="asma-arabic">ٱلْشَّكُورُ</div>
+                        <div class="asma-transliteration">ASH-SHAKOOR</div>
+                        <div class="asma-meaning">The Rewarder of Thankfulness</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">36</div>
+                        <div class="asma-arabic">ٱلْعَلِيُّ</div>
+                        <div class="asma-transliteration">AL-'ALIYY</div>
+                        <div class="asma-meaning">The Highest</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">37</div>
+                        <div class="asma-arabic">ٱلْكَبِيرُ</div>
+                        <div class="asma-transliteration">AL-KABEER</div>
+                        <div class="asma-meaning">The Greatest</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">38</div>
+                        <div class="asma-arabic">ٱلْحَفِيظُ</div>
+                        <div class="asma-transliteration">AL-HAFEEZ</div>
+                        <div class="asma-meaning">The Preserver</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">39</div>
+                        <div class="asma-arabic">ٱلْمُقِيتُ</div>
+                        <div class="asma-transliteration">AL-MUQEET</div>
+                        <div class="asma-meaning">The Nourisher</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">40</div>
+                        <div class="asma-arabic">ٱلْحَسِيبُ</div>
+                        <div class="asma-transliteration">AL-HASEEB</div>
+                        <div class="asma-meaning">The Accounter</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">41</div>
+                        <div class="asma-arabic">ٱلْجَلِيلُ</div>
+                        <div class="asma-transliteration">AL-JALEEL</div>
+                        <div class="asma-meaning">The Majestic</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">42</div>
+                        <div class="asma-arabic">ٱلْكَرِيمُ</div>
+                        <div class="asma-transliteration">AL-KAREEM</div>
+                        <div class="asma-meaning">The Generous</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">43</div>
+                        <div class="asma-arabic">ٱلْرَّقِيبُ</div>
+                        <div class="asma-transliteration">AR-RAQEEB</div>
+                        <div class="asma-meaning">The Watchful One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">44</div>
+                        <div class="asma-arabic">ٱلْمُجِيبُ</div>
+                        <div class="asma-transliteration">AL-MUJEEB</div>
+                        <div class="asma-meaning">The Responder to Prayer</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">45</div>
+                        <div class="asma-arabic">ٱلْوَاسِعُ</div>
+                        <div class="asma-transliteration">AL-WAASI'</div>
+                        <div class="asma-meaning">The All-Comprehending</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">46</div>
+                        <div class="asma-arabic">ٱلْحَكِيمُ</div>
+                        <div class="asma-transliteration">AL-HAKEEM</div>
+                        <div class="asma-meaning">The Perfectly Wise</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">47</div>
+                        <div class="asma-arabic">ٱلْوَدُودُ</div>
+                        <div class="asma-transliteration">AL-WADOOD</div>
+                        <div class="asma-meaning">The Loving One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">48</div>
+                        <div class="asma-arabic">ٱلْمَجِيدُ</div>
+                        <div class="asma-transliteration">AL-MAJEED</div>
+                        <div class="asma-meaning">The Glorious</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">49</div>
+                        <div class="asma-arabic">ٱلْبَاعِثُ</div>
+                        <div class="asma-transliteration">AL-BA'ITH</div>
+                        <div class="asma-meaning">The Resurrector</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">50</div>
+                        <div class="asma-arabic">ٱلْشَّهِيدُ</div>
+                        <div class="asma-transliteration">ASH-SHAHEED</div>
+                        <div class="asma-meaning">The Witness</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">51</div>
+                        <div class="asma-arabic">ٱلْحَقُّ</div>
+                        <div class="asma-transliteration">AL-HAQQ</div>
+                        <div class="asma-meaning">The Truth</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">52</div>
+                        <div class="asma-arabic">ٱلْوَكِيلُ</div>
+                        <div class="asma-transliteration">AL-WAKEEL</div>
+                        <div class="asma-meaning">The Trustee</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">53</div>
+                        <div class="asma-arabic">ٱلْقَوِيُّ</div>
+                        <div class="asma-transliteration">AL-QAWIYY</div>
+                        <div class="asma-meaning">The Possessor of All Strength</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">54</div>
+                        <div class="asma-arabic">ٱلْمَتِينُ</div>
+                        <div class="asma-transliteration">AL-MATEEN</div>
+                        <div class="asma-meaning">The Forceful One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">55</div>
+                        <div class="asma-arabic">ٱلْوَلِيُّ</div>
+                        <div class="asma-transliteration">AL-WALIYY</div>
+                        <div class="asma-meaning">The Governor</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">56</div>
+                        <div class="asma-arabic">ٱلْحَمِيدُ</div>
+                        <div class="asma-transliteration">AL-HAMEED</div>
+                        <div class="asma-meaning">The Praised One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">57</div>
+                        <div class="asma-arabic">ٱلْمُحْصِي</div>
+                        <div class="asma-transliteration">AL-MUHSEE</div>
+                        <div class="asma-meaning">The Appraiser</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">58</div>
+                        <div class="asma-arabic">ٱلْمُبْدِئُ</div>
+                        <div class="asma-transliteration">AL-MUBDI'</div>
+                        <div class="asma-meaning">The Originator</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">59</div>
+                        <div class="asma-arabic">ٱلْمُعِيدُ</div>
+                        <div class="asma-transliteration">AL-MU'ID</div>
+                        <div class="asma-meaning">The Restorer</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">60</div>
+                        <div class="asma-arabic">ٱلْمُحْيِي</div>
+                        <div class="asma-transliteration">AL-MUHYI</div>
+                        <div class="asma-meaning">The Giver of Life</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">61</div>
+                        <div class="asma-arabic">ٱلْمُمِيتُ</div>
+                        <div class="asma-transliteration">AL-MUMEET</div>
+                        <div class="asma-meaning">The Taker of Life</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">62</div>
+                        <div class="asma-arabic">ٱلْحَيُّ</div>
+                        <div class="asma-transliteration">AL-HAYY</div>
+                        <div class="asma-meaning">The Ever Living One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">63</div>
+                        <div class="asma-arabic">ٱلْقَيُّومُ</div>
+                        <div class="asma-transliteration">AL-QAYYOOM</div>
+                        <div class="asma-meaning">The Self-Existing One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">64</div>
+                        <div class="asma-arabic">ٱلْوَاجِدُ</div>
+                        <div class="asma-transliteration">AL-WAAJID</div>
+                        <div class="asma-meaning">The Finder</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">65</div>
+                        <div class="asma-arabic">ٱلْمَاجِدُ</div>
+                        <div class="asma-transliteration">AL-MAAJID</div>
+                        <div class="asma-meaning">The Glorious</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">66</div>
+                        <div class="asma-arabic">ٱلْوَاحِدُ</div>
+                        <div class="asma-transliteration">AL-WAAHID</div>
+                        <div class="asma-meaning">The One, the All Inclusive, The Indivisible</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">67</div>
+                        <div class="asma-arabic">ٱلْأَحَدُ</div>
+                        <div class="asma-transliteration">AL-AHAD</div>
+                        <div class="asma-meaning">The One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">68</div>
+                        <div class="asma-arabic">ٱلْصَّمَدُ</div>
+                        <div class="asma-transliteration">AS-SAMAD</div>
+                        <div class="asma-meaning">The Satisfier of All Needs</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">69</div>
+                        <div class="asma-arabic">ٱلْقَادِرُ</div>
+                        <div class="asma-transliteration">AL-QADIR</div>
+                        <div class="asma-meaning">The All-Powerful</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">70</div>
+                        <div class="asma-arabic">ٱلْمُقْتَدِرُ</div>
+                        <div class="asma-transliteration">AL-MUQTADIR</div>
+                        <div class="asma-meaning">The Creator of All Power</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">71</div>
+                        <div class="asma-arabic">ٱلْمُقَدِّمُ</div>
+                        <div class="asma-transliteration">AL-MUQADDIM</div>
+                        <div class="asma-meaning">The Expediter</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">72</div>
+                        <div class="asma-arabic">ٱلْمُؤَخِّرُ</div>
+                        <div class="asma-transliteration">AL-MU'AKHKHIR</div>
+                        <div class="asma-meaning">The Delayer</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">73</div>
+                        <div class="asma-arabic">ٱلْأَوَّلُ</div>
+                        <div class="asma-transliteration">AL-AWWAL</div>
+                        <div class="asma-meaning">The First</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">74</div>
+                        <div class="asma-arabic">ٱلْآخِرُ</div>
+                        <div class="asma-transliteration">AL-AAKHIR</div>
+                        <div class="asma-meaning">The Last</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">75</div>
+                        <div class="asma-arabic">ٱلْظَّاهِرُ</div>
+                        <div class="asma-transliteration">AZ-ZAAHIR</div>
+                        <div class="asma-meaning">The Manifest One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">76</div>
+                        <div class="asma-arabic">ٱلْبَاطِنُ</div>
+                        <div class="asma-transliteration">AL-BAATIN</div>
+                        <div class="asma-meaning">The Hidden One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">77</div>
+                        <div class="asma-arabic">ٱلْوَالِي</div>
+                        <div class="asma-transliteration">AL-WAALI</div>
+                        <div class="asma-meaning">The Patron</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">78</div>
+                        <div class="asma-arabic">ٱلْمُتَعَالِي</div>
+                        <div class="asma-transliteration">AL-MUTA'ALI</div>
+                        <div class="asma-meaning">The Supreme One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">79</div>
+                        <div class="asma-arabic">ٱلْبَرُّ</div>
+                        <div class="asma-transliteration">AL-BARR</div>
+                        <div class="asma-meaning">The Doer of Good</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">80</div>
+                        <div class="asma-arabic">ٱلْتَّوَّابُ</div>
+                        <div class="asma-transliteration">AT-TAWWAAB</div>
+                        <div class="asma-meaning">The Guide to Repentance</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">81</div>
+                        <div class="asma-arabic">ٱلْمُنْتَقِمُ</div>
+                        <div class="asma-transliteration">AL-MUNTAQIM</div>
+                        <div class="asma-meaning">The Avenger</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">82</div>
+                        <div class="asma-arabic">ٱلْعَفُوُّ</div>
+                        <div class="asma-transliteration">AL-'AFUWW</div>
+                        <div class="asma-meaning">The Forgiver</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">83</div>
+                        <div class="asma-arabic">ٱلْرَّءُوفُ</div>
+                        <div class="asma-transliteration">AR-RA'OOF</div>
+                        <div class="asma-meaning">The Clement</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">84</div>
+                        <div class="asma-arabic">مَالِكُ ٱلْمُلْكِ</div>
+                        <div class="asma-transliteration">MAALIK-UL-MULK</div>
+                        <div class="asma-meaning">The Owner of All</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">85</div>
+                        <div class="asma-arabic">ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ</div>
+                        <div class="asma-transliteration">DHUL-JALAALI WAL-IKRAAM</div>
+                        <div class="asma-meaning">The Lord of Majesty and Bounty</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">86</div>
+                        <div class="asma-arabic">ٱلْمُقْسِطُ</div>
+                        <div class="asma-transliteration">AL-MUQSIT</div>
+                        <div class="asma-meaning">The Equitable One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">87</div>
+                        <div class="asma-arabic">ٱلْجَامِعُ</div>
+                        <div class="asma-transliteration">AL-JAAMI'</div>
+                        <div class="asma-meaning">The Gatherer</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">88</div>
+                        <div class="asma-arabic">ٱلْغَنِيُّ</div>
+                        <div class="asma-transliteration">AL-GHANIYY</div>
+                        <div class="asma-meaning">The Rich One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">89</div>
+                        <div class="asma-arabic">ٱلْمُغْنِي</div>
+                        <div class="asma-transliteration">AL-MUGHNI</div>
+                        <div class="asma-meaning">The Enricher</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">90</div>
+                        <div class="asma-arabic">ٱلْمَانِعُ</div>
+                        <div class="asma-transliteration">AL-MAANI'</div>
+                        <div class="asma-meaning">The Preventer of Harm</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">91</div>
+                        <div class="asma-arabic">ٱلْضَّارُ</div>
+                        <div class="asma-transliteration">AD-DAARR</div>
+                        <div class="asma-meaning">The Creator of The Harmful</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">92</div>
+                        <div class="asma-arabic">ٱلْنَّافِعُ</div>
+                        <div class="asma-transliteration">AN-NAAFI'</div>
+                        <div class="asma-meaning">The Creator of Good</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">93</div>
+                        <div class="asma-arabic">ٱلْنُّورُ</div>
+                        <div class="asma-transliteration">AN-NOOR</div>
+                        <div class="asma-meaning">The Light</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">94</div>
+                        <div class="asma-arabic">ٱلْهَادِي</div>
+                        <div class="asma-transliteration">AL-HAADI</div>
+                        <div class="asma-meaning">The Guide</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">95</div>
+                        <div class="asma-arabic">ٱلْبَدِيعُ</div>
+                        <div class="asma-transliteration">AL-BADEE'</div>
+                        <div class="asma-meaning">The Originator</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">96</div>
+                        <div class="asma-arabic">ٱلْبَاقِي</div>
+                        <div class="asma-transliteration">AL-BAAQI</div>
+                        <div class="asma-meaning">The Everlasting One</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">97</div>
+                        <div class="asma-arabic">ٱلْوَارِثُ</div>
+                        <div class="asma-transliteration">AL-WAARITH</div>
+                        <div class="asma-meaning">The Inheritor of All</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">98</div>
+                        <div class="asma-arabic">ٱلْرَّشِيدُ</div>
+                        <div class="asma-transliteration">AR-RASHEED</div>
+                        <div class="asma-meaning">The Righteous Teacher</div>
+                    </div>
+                    <div class="card">
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <div class="asma-number">99</div>
+                        <div class="asma-arabic">ٱلْصَّبُورُ</div>
+                        <div class="asma-transliteration">AS-SABOOR</div>
+                        <div class="asma-meaning">The Patient One</div>
+                    </div>
+                </div>
+                <div id="no-results" class="no-results">
+                    <h3>No Names Found</h3>
+                    <p>Your search did not match any of the 99 Names. Please try a different keyword.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="material-icons">dashboard</i>
+            <span>Home</span>
+        </a>
+        <a href="surahs.html" class="bottom-nav-item">
+            <i class="material-icons">menu_book</i>
+            <span>Surahs</span>
+        </a>
+        <a href="dhikr.html" class="bottom-nav-item">
+            <i class="material-icons">all_inclusive</i>
+            <span>Dhikr</span>
+        </a>
+        <a href="duas.html" class="bottom-nav-item">
+            <i class="material-icons">pan_tool</i>
+            <span>Duas</span>
+        </a>
+        <a href="asma-ul-husna.html" class="bottom-nav-item active">
+            <i class="material-icons">view_module</i>
+            <span>Names</span>
+        </a>
+    </nav>
+
+    <script>
+        // --- 6. JavaScript for Interactivity ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+
+            function closeDrawer() {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('open');
+            }
+
+            function openDrawer() {
+                sidebar.classList.add('open');
+                backdrop.classList.add('open');
+            }
+
+            menuButton.addEventListener('click', function() {
+                // Toggle drawer
+                if (sidebar.classList.contains('open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+
+            backdrop.addEventListener('click', function() {
+                closeDrawer();
+            });
+
+            // --- Search Functionality ---
+            const searchInput = document.getElementById('search-input');
+            const contentGrid = document.getElementById('content-grid');
+            const cards = contentGrid.getElementsByClassName('card');
+            const noResults = document.getElementById('no-results');
+            const searchClearBtn = document.getElementById('search-clear-btn');
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                let found = false;
+                searchClearBtn.style.display = filter ? 'block' : 'none';
+
+                for (let i = 0; i < cards.length; i++) {
+                    const cardText = cards[i].textContent || cards[i].innerText;
+                    if (cardText.toLowerCase().indexOf(filter) > -1) {
+                        cards[i].style.display = "";
+                        found = true;
+                    } else {
+                        cards[i].style.display = "none";
+                    }
+                }
+
+                noResults.style.display = found ? "none" : "block";
+            });
+
+            searchClearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                // Trigger the keyup event to reset the search
+                searchInput.dispatchEvent(new KeyboardEvent('keyup', {'bubbles': true}));
+            });
+
+            // --- Copy to Clipboard Functionality ---
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent card hover effects if needed
+                    const card = this.closest('.card');
+                    const arabicText = card.querySelector('.asma-arabic').innerText;
+                    
+                    navigator.clipboard.writeText(arabicText).then(() => {
+                        // Provide feedback
+                        const originalIcon = this.innerHTML;
+                        this.innerHTML = `<span class="copy-feedback">Copied!</span>`;
+                        
+                        // Revert back after a delay
+                        setTimeout(() => {
+                            this.innerHTML = originalIcon;
+                        }, 1500);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

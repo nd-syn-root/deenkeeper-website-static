@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surahs - Islamic Dashboard</title>
+
+    <!-- Google Fonts: Poppins & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* --- 1. Theming and Base Styles --- */
+        :root {
+            --primary-color: #264653; /* Charcoal Blue */
+            --primary-dark: #1a3038;
+            --secondary-color: #e9c46a; /* Soft Gold */
+            --background-default: #f8f9fa;
+            --background-paper: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-on-primary: #ffffff;
+            --shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --sidebar-width: 240px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-default);
+            color: var(--text-primary);
+        }
+
+        /* --- 2. Main Layout --- */
+        .app-container {
+            display: flex;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            margin-left: var(--sidebar-width); /* Space for desktop sidebar */
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 64px;
+            background-color: var(--background-paper);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+        }
+
+        .top-bar .menu-button {
+            display: none; /* Hidden on desktop */
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        /* This pushes content below the fixed top-bar */
+        .toolbar-spacer {
+            height: 64px;
+        }
+
+        /* --- 3. Sidebar / Drawer --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-dark);
+            color: var(--text-on-primary);
+            z-index: 1200;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            height: 64px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-on-primary);
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .nav-item .material-icons {
+            margin-right: 24px;
+        }
+
+        /* --- 4. Content Cards --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr; /* Default for single column */
+            gap: 24px;
+        }
+
+        /* A new grid class for two columns on desktop */
+        @media (min-width: 900px) {
+            .grid-2-cols {
+                /* A more responsive grid that adapts to screen size */
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            }
+        }
+
+        .card {
+            background: linear-gradient(var(--background-paper), var(--background-paper)) padding-box, 
+                      linear-gradient(160deg, #e9c46a40, #26465360) border-box;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* Needed for copy button positioning */
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 12px 32px rgba(38, 70, 83, 0.08);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .quote {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .arabic-text {
+            font-size: 1.5rem;
+            direction: rtl;
+            line-height: 2.8rem;
+            margin: 1rem 0;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 28px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+        }
+        .content-section-wrapper {
+            margin-bottom: 48px;
+        }
+
+        .content-section {
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* Card Header Styles */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .surah-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .surah-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        /* Copy Button Styles */
+        .copy-btn {
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        .card:hover .copy-btn {
+            background-color: rgba(0,0,0,0.08);
+        }
+        .copy-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+        }
+        .copy-feedback {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Search Bar Styles */
+        .search-bar-wrapper {
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 50px; /* Increased padding for better spacing */
+            border-radius: 12px;
+            border: none; /* Removed border for a cleaner look */
+            font-size: 1rem;
+            background-color: #f0f2f5; /* Slightly different background */
+            transition: box-shadow 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(38, 70, 83, 0.1);
+        }
+        .search-input::placeholder {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-secondary);
+        }
+        .search-bar-wrapper .material-icons:not(.search-clear-btn) {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .search-clear-btn {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+        .no-results {
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        /* --- 5. Mobile Responsiveness --- */
+        .mobile-drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+        }
+        
+        .bottom-nav {
+            display: none; /* Hidden on desktop */
+        }
+
+        /* Styles for screens smaller than 900px */
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0; /* Full width content */
+                padding-bottom: 80px; /* Space for bottom nav */
+            }
+
+            .top-bar {
+                left: 0; /* Full width top bar */
+            }
+
+            .top-bar .menu-button {
+                display: block; /* Show hamburger menu */
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-drawer-backdrop.open {
+                display: block;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 56px;
+                background-color: var(--background-paper);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-decoration: none;
+            }
+            
+            .bottom-nav-item.active {
+                color: var(--primary-color);
+            }
+
+            .bottom-nav-item .material-icons {
+                margin-bottom: 4px;
+            }
+        }
+        
+        /* Further adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px;
+                padding-bottom: 80px;
+            }
+            .top-bar {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar (Desktop) / Drawer (Mobile) -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Guidance</h2>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="index.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+                <li class="nav-item"><a href="surahs.html" class="active"><i class="material-icons">menu_book</i> Surahs</a></li>
+                <li class="nav-item"><a href="dhikr.html"><i class="material-icons">all_inclusive</i> Dhikr</a></li>
+                <li class="nav-item"><a href="duas.html"><i class="material-icons">pan_tool</i> Duas</a></li>
+                <li class="nav-item"><a href="asma-ul-husna.html"><i class="material-icons">view_module</i> Asma ul Husna</a></li>
+            </ul>
+        </nav>
+
+        <!-- Backdrop for mobile drawer -->
+        <div class="mobile-drawer-backdrop" id="backdrop"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+                <h1>Surahs</h1>
+            </header>
+            <div class="toolbar-spacer"></div>
+
+            <!-- Search Bar -->
+            <div class="search-bar-wrapper">
+                <i class="material-icons">search</i>
+                <input type="text" id="search-input" class="search-input" placeholder="Search for a Surah...">
+                <span class="material-icons search-clear-btn" id="search-clear-btn">close</span>
+            </div>
+
+            <!-- Surahs Section -->
+            <section class="content-section-wrapper">
+                <h2 class="section-title">Featured Surahs</h2>
+                <div id="content-grid" class="grid-container grid-2-cols">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">112</span>
+                                <h3>Surah Al-Ikhlas</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Qul huwa Allahu ahad. Allahu assamad. Lam yalid wa lam yoolad. Wa lam yakun lahu kufuwan ahad.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Say, "He is Allah, the One. Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent."</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">103</span>
+                                <h3>Surah Al-Asr</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">وَٱلْعَصْرِ ۝ إِنَّ ٱلْإِنسَٰنَ لَفِى خُسْرٍ ۝ إِلَّا ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّٰلِحَٰتِ وَتَوَاصَوْا۟ بِٱلْحَقِّ وَتَوَاصَوْا۟ بِٱلصَّبْرِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">WalAAasr. Inna al-insana lafee khusr. Illa allatheena amanoo waAAamiloo assalihati watawasaw bialhaqqi watawasaw bissabr.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">By time, Indeed, mankind is in loss, Except for those who have believed and done righteous deeds and advised each other to truth and advised each other to patience.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">113</span>
+                                <h3>Surah Al-Falaq</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ ۝ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Qul a'udhu birabbi alfalaq. Min sharri ma khalaq. Wamin sharri ghasiqin itha waqab. Wamin sharri alnnaffathati fee al'uqad. Wamin sharri hasidin itha hasad.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Say, "I seek refuge in the Lord of daybreak, From the evil of that which He created, And from the evil of darkness when it settles, And from the evil of the blowers in knots, And from the evil of an envier when he envies."</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">114</span>
+                                <h3>Surah An-Nas</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ ۝ مَلِكِ ٱلنَّاسِ ۝ إِلَٰهِ ٱلنَّاسِ ۝ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ۝ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ ۝ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Qul a'udhu birabbi alnnas. Maliki alnnas. Ilahi alnnas. Min sharri alwaswasi alkhannas. Allathee yuwaswisu fee sudoori alnnas. Mina aljinnati waalnnas.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Say, "I seek refuge in the Lord of mankind, The Sovereign of mankind, The God of mankind, From the evil of the retreating whisperer, Who whispers [evil] into the breasts of mankind, From among the jinn and mankind."</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">1</span>
+                                <h3>Surah Al-Fatiha</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ۝ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝ مَٰلِكِ يَوْمِ ٱلدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ۝ صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Bismillahi rahmani raheem. Alhamdu lillahi rabbil alameen. Ar-rahmani ar-raheem. Maliki yawmiddin. Iyyaka na'budu wa iyyaka nasta'een. Ihdina assiratal mustaqeem. Siratal latheena an'amta alayhim, ghayril maghdoobi alayhim wala addalleen.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">In the name of Allah, the Entirely Merciful, the Especially Merciful. [All] praise is [due] to Allah, Lord of the worlds. The Entirely Merciful, the Especially Merciful. Sovereign of the Day of Recompense. It is You we worship and You we ask for help. Guide us to the straight path. The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">109</span>
+                                <h3>Surah Al-Kafirun</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">قُلْ يَٰٓأَيُّهَا ٱلْكَٰفِرُونَ ۝ لَآ أَعْبُدُ مَا تَعْبُدُونَ ۝ وَلَآ أَنتُمْ عَٰبِدُونَ مَآ أَعْبُدُ ۝ وَلَآ أَنَا۠ عَابِدٌ مَّا عَبَدتُّمْ ۝ وَلَآ أَنتُمْ عَٰبِدُونَ مَآ أَعْبُدُ ۝ لَكُمْ دِينُكُمْ وَلِىَ دِينِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Qul yaa-ai yuhal kafiroon. Laa a'budu ma t'abudoon. Wala antum 'abidoona maa a'bud. Wala ana 'abidum ma 'abattum. Wala antum 'abidoona ma a'bud. Lakum deenukum waliya deen.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Say, "O disbelievers, I do not worship what you worship. Nor are you worshippers of what I worship. Nor will I be a worshipper of what you worship. Nor will you be worshippers of what I worship. For you is your religion, and for me is my religion."</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">110</span>
+                                <h3>Surah An-Nasr</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">إِذَا جَآءَ نَصْرُ ٱللَّهِ وَٱلْفَتْحُ ۝ وَرَأَيْتَ ٱلنَّاسَ يَدْخُلُونَ فِى دِينِ ٱللَّهِ أَفْوَاجًا ۝ فَسَبِّحْ بِحَمْدِ رَبِّكَ وَٱسْتَغْفِرْهُ ۚ إِنَّهُۥ كَانَ تَوَّابًۢا</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Iza jaa-a nas rullahi walfath. Waraayta annasa yadkhuloona fee deenillahi afwaja. Fasabbih bihamdi rabbika wastaghfirh, innahu kana tawwaba.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">When the victory of Allah has come and the conquest, And you see the people entering into the religion of Allah in multitudes, Then exalt [Him] with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">111</span>
+                                <h3>Surah Al-Masad</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">تَبَّتْ يَدَآ أَبِى لَهَبٍ وَتَبَّ ۝ مَآ أَغْنَىٰ عَنْهُ مَالُهُۥ وَمَا كَسَبَ ۝ سَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ ۝ وَٱمْرَأَتُهُۥ حَمَّالَةَ ٱلْحَطَبِ ۝ فِى جِيدِهَا حَبْلٌ مِّن مَّسَدٍۭ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Tabbat yada abee lahabin watab. Ma aghna 'anhu maluhu wama kasab. Sayasla naran thata lahab. Wamraatuhu hammalata alhatab. Fee jeediha hablun min masad.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">May the hands of Abu Lahab be ruined, and ruined is he. His wealth will not avail him or that which he gained. He will [enter to] burn in a Fire of [blazing] flame, And his wife [as well] - the carrier of firewood. Around her neck is a rope of [twisted] fiber.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">107</span>
+                                <h3>Surah Al-Ma'un</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">أَرَءَيْتَ ٱلَّذِى يُكَذِّبُ بِٱلدِّينِ ۝ فَذَٰلِكَ ٱلَّذِى يَدُعُّ ٱلْيَتِيمَ ۝ وَلَا يَحُضُّ عَلَىٰ طَعَامِ ٱلْمِسْكِينِ ۝ فَوَيْلٌ لِّلْمُصَلِّينَ ۝ ٱلَّذِينَ هُمْ عَن صَلَاتِهِمْ سَاهُونَ ۝ ٱلَّذِينَ هُمْ يُرَآءُونَ ۝ وَيَمْنَعُونَ ٱلْمَاعُونَ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Ara'aytal-ladhee yukadhdhibu biddeen. Fadhalikal-ladhee yadu'-'ul-yateem. Wa la yahuddu 'ala ta'amil-miskeen. Fawaylul-lil-musalleen. Alladheena hum 'an salatihim sahoon. Alladheena hum yuraa'oon. Wa yamna'oonal-ma'oon.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Have you seen the one who denies the Recompense? For that is the one who drives away the orphan. And does not encourage the feeding of the poor. So woe to those who pray. [But] who are heedless of their prayer. Those who make show [of their deeds]. And withhold [simple] assistance.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">108</span>
+                                <h3>Surah Al-Kawthar</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">إِنَّآ أَعْطَيْنَٰكَ ٱلْكَوْثَرَ ۝ فَصَلِّ لِرَبِّكَ وَٱنْحَرْ ۝ إِنَّ شَانِئَكَ هُوَ ٱلْأَبْتَرُ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Inna a'tayna kal-kawthar. Fasalli lirabbika wanhar. Inna shani-aka huwal-abtar.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Indeed, We have granted you, [O Muhammad], al-Kawthar. So pray to your Lord and sacrifice [to Him alone]. Indeed, your enemy is the one cut off.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="surah-title-group">
+                                <span class="surah-number">105</span>
+                                <h3>Surah Al-Fil</h3>
+                            </div>
+                            <button class="copy-btn"><i class="material-icons">content_copy</i></button>
+                        </div>
+                        <p class="arabic-text">أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَٰبِ ٱلْفِيلِ ۝ أَلَمْ يَجْعَلْ كَيْدَهُمْ فِى تَضْلِيلٍ ۝ وَأَرْسَلَ عَلَيْهِمْ طَيْرًا أَبَابِيلَ ۝ تَرْمِيهِم بِحِجَارَةٍ مِّن سِجِّيلٍ ۝ فَجَعَلَهُمْ كَعَصْفٍ مَّأْكُولٍۭ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Alam tara kayfa fa'ala rabbuka bi-ashabil feel. Alam yaj'al kaydahum fee tadleel. Wa arsala 'alayhim tayran ababeel. Tarmeehim bihijaratin min sijjeel. Faja'alahum ka'asfin ma'kool.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Have you not considered, [O Muhammad], how your Lord dealt with the companions of the elephant? Did He not make their plan into misguidance? And He sent against them birds in flocks, Striking them with stones of hard clay, And He made them like eaten straw.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-results" class="no-results">
+                    <h3>No Surahs Found</h3>
+                    <p>Your search did not match any Surahs. Please try a different keyword.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="material-icons">dashboard</i>
+            <span>Home</span>
+        </a>
+        <a href="surahs.html" class="bottom-nav-item active">
+            <i class="material-icons">menu_book</i>
+            <span>Surahs</span>
+        </a>
+        <a href="dhikr.html" class="bottom-nav-item">
+            <i class="material-icons">all_inclusive</i>
+            <span>Dhikr</span>
+        </a>
+        <a href="duas.html" class="bottom-nav-item">
+            <i class="material-icons">pan_tool</i>
+            <span>Duas</span>
+        </a>
+        <a href="asma-ul-husna.html" class="bottom-nav-item">
+            <i class="material-icons">view_module</i>
+            <span>Names</span>
+        </a>
+    </nav>
+
+    <script>
+        // --- 6. JavaScript for Interactivity ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+
+            function closeDrawer() {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('open');
+            }
+
+            function openDrawer() {
+                sidebar.classList.add('open');
+                backdrop.classList.add('open');
+            }
+
+            menuButton.addEventListener('click', function() {
+                // Toggle drawer
+                if (sidebar.classList.contains('open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+
+            backdrop.addEventListener('click', function() {
+                closeDrawer();
+            });
+
+            // --- Search Functionality ---
+            const searchInput = document.getElementById('search-input');
+            const contentGrid = document.getElementById('content-grid');
+            const cards = contentGrid.getElementsByClassName('card');
+            const noResults = document.getElementById('no-results');
+            const searchClearBtn = document.getElementById('search-clear-btn');
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                let found = false;
+                searchClearBtn.style.display = filter ? 'block' : 'none';
+
+                for (let i = 0; i < cards.length; i++) {
+                    const cardText = cards[i].textContent || cards[i].innerText;
+                    if (cardText.toLowerCase().indexOf(filter) > -1) {
+                        cards[i].style.display = "";
+                        found = true;
+                    } else {
+                        cards[i].style.display = "none";
+                    }
+                }
+
+                noResults.style.display = found ? "none" : "block";
+            });
+
+            searchClearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                // Trigger the keyup event to reset the search
+                searchInput.dispatchEvent(new KeyboardEvent('keyup', {'bubbles': true}));
+            });
+
+            // --- Copy to Clipboard Functionality ---
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent card hover effects if needed
+                    const card = this.closest('.card');
+                    const surahTitle = card.querySelector('h3').innerText;
+                    const arabicText = card.querySelector('.arabic-text').innerText.trim();
+                    const translit = card.querySelector('h4:nth-of-type(1) + .quote').innerText.trim();
+                    const meaning = card.querySelector('h4:nth-of-type(2) + .quote').innerText.trim();
+                    
+                    const textToCopy = `${surahTitle}\n\n${arabicText}\n\nTransliteration:\n${translit}\n\nMeaning:\n${meaning}`;
+                    
+                    navigator.clipboard.writeText(arabicText).then(() => {
+                        // Provide feedback
+                        const originalIcon = this.innerHTML;
+                        this.innerHTML = `<span class="copy-feedback">Copied!</span>`;
+                        
+                        // Revert back after a delay
+                        setTimeout(() => {
+                            this.innerHTML = originalIcon;
+                        }, 1500);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

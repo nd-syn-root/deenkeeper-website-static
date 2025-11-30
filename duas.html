@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duas - Islamic Dashboard</title>
+
+    <!-- Google Fonts: Poppins & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* --- 1. Theming and Base Styles --- */
+        :root {
+            --primary-color: #264653; /* Charcoal Blue */
+            --primary-dark: #1a3038;
+            --secondary-color: #e9c46a; /* Soft Gold */
+            --background-default: #f8f9fa;
+            --background-paper: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-on-primary: #ffffff;
+            --shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --sidebar-width: 240px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-default);
+            color: var(--text-primary);
+        }
+
+        /* --- 2. Main Layout --- */
+        .app-container {
+            display: flex;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            margin-left: var(--sidebar-width); /* Space for desktop sidebar */
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 64px;
+            background-color: var(--background-paper);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+        }
+
+        .top-bar .menu-button {
+            display: none; /* Hidden on desktop */
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        /* This pushes content below the fixed top-bar */
+        .toolbar-spacer {
+            height: 64px;
+        }
+
+        /* --- 3. Sidebar / Drawer --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-dark);
+            color: var(--text-on-primary);
+            z-index: 1200;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            height: 64px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-on-primary);
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .nav-item .material-icons {
+            margin-right: 24px;
+        }
+
+        /* --- 4. Content Cards --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr; /* Default for single column */
+            gap: 24px;
+        }
+
+        /* A new grid class for two columns on desktop */
+        @media (min-width: 900px) {
+            .grid-2-cols {
+                /* A more responsive grid that adapts to screen size */
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            }
+        }
+
+        .card {
+            background: linear-gradient(var(--background-paper), var(--background-paper)) padding-box, 
+                      linear-gradient(160deg, #e9c46a40, #26465360) border-box;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* Needed for copy button positioning */
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 12px 32px rgba(38, 70, 83, 0.08);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .quote {
+            font-style: italic;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .arabic-text {
+            font-size: 1.5rem;
+            direction: rtl;
+            margin-bottom: 1rem;
+            line-height: 2.8rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 28px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+        }
+        .content-section-wrapper {
+            margin-bottom: 48px;
+        }
+
+        .content-section {
+            margin-bottom: 1rem;
+        }
+
+        /* Copy Button Styles */
+        .copy-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        .card:hover .copy-btn {
+            background-color: rgba(0,0,0,0.08);
+        }
+        .copy-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+        }
+        .copy-feedback {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Search Bar Styles */
+        .search-bar-wrapper {
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 50px; /* Increased padding for better spacing */
+            border-radius: 12px;
+            border: none; /* Removed border for a cleaner look */
+            font-size: 1rem;
+            background-color: #f0f2f5; /* Slightly different background */
+            transition: box-shadow 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(38, 70, 83, 0.1);
+        }
+        .search-input::placeholder {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-secondary);
+        }
+        .search-bar-wrapper .material-icons:not(.search-clear-btn) {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .search-clear-btn {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+        .no-results {
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        /* --- 5. Mobile Responsiveness --- */
+        .mobile-drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+        }
+        
+        .bottom-nav {
+            display: none; /* Hidden on desktop */
+        }
+
+        /* Styles for screens smaller than 900px */
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0; /* Full width content */
+                padding-bottom: 80px; /* Space for bottom nav */
+            }
+
+            .top-bar {
+                left: 0; /* Full width top bar */
+            }
+
+            .top-bar .menu-button {
+                display: block; /* Show hamburger menu */
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-drawer-backdrop.open {
+                display: block;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 56px;
+                background-color: var(--background-paper);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-decoration: none;
+            }
+            
+            .bottom-nav-item.active {
+                color: var(--primary-color);
+            }
+
+            .bottom-nav-item .material-icons {
+                margin-bottom: 4px;
+            }
+        }
+        
+        /* Further adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px;
+                padding-bottom: 80px;
+            }
+            .top-bar {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar (Desktop) / Drawer (Mobile) -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Guidance</h2>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="index.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+                <li class="nav-item"><a href="surahs.html"><i class="material-icons">menu_book</i> Surahs</a></li>
+                <li class="nav-item"><a href="dhikr.html"><i class="material-icons">all_inclusive</i> Dhikr</a></li>
+                <li class="nav-item"><a href="duas.html" class="active"><i class="material-icons">pan_tool</i> Duas</a></li>
+                <li class="nav-item"><a href="asma-ul-husna.html"><i class="material-icons">view_module</i> Asma ul Husna</a></li>
+            </ul>
+        </nav>
+
+        <!-- Backdrop for mobile drawer -->
+        <div class="mobile-drawer-backdrop" id="backdrop"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+                <h1>Supplications (Dua)</h1>
+            </header>
+            <div class="toolbar-spacer"></div>
+
+            <!-- Search Bar -->
+            <div class="search-bar-wrapper">
+                <i class="material-icons">search</i>
+                <input type="text" id="search-input" class="search-input" placeholder="Search for a Dua...">
+                <span class="material-icons search-clear-btn" id="search-clear-btn">close</span>
+            </div>
+
+            <!-- Duas Section -->
+            <section class="content-section-wrapper">
+                <h2 class="section-title">Supplications (Dua)</h2>
+                <div id="content-grid" class="grid-container grid-2-cols">
+                    <div class="card">
+                        <h3>Dua for Knowledge</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">رَّبِّ زِدْنِى عِلْمًا</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Rabbi zidni ilma.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">My Lord, increase me in knowledge.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Dua for Parents</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">رَّبِّ ٱرْحَمْهُمَا كَمَا رَبَّيَانِى صَغِيرًا</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Rabbi irhamhuma kama rabbayani sagheera.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">My Lord, have mercy upon them as they brought me up [when I was] small.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Good in This Life & Hereafter</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">رَبَّنَآ ءَاتِنَا فِى ٱلدُّنْيَا حَسَنَةً وَفِى ٱلْءَاخِرَةِ حَسَنَةً وَقِنَا عَذَابَ ٱلنَّارِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Rabbana atina fi dunya hasanatan wa fil akhirati hasanatan waqina 'adhaban-nar.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua of Prophet Yunus (in distress)</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">لَّآ إِلَٰهَ إِلَّآ أَنتَ سُبْحَٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّٰلِمِينَ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">La ilaha illa anta subhanaka inni kuntu minaz-zalimin.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Forgiveness</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">رَبَّنَا ٱغْفِرْ لِى وَلِوَٰلِدَىَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ ٱلْحِسَابُ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Rabbana-ghfirli waliwalidayya walil-mu'minina yawma yaqumul-hisab.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Our Lord, forgive me and my parents and the believers the Day the account is established.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Guidance</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Ihdinas-siratal-mustaqim.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Guide us to the straight path.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Master of Forgiveness (Sayyid al-Istighfar)</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma anta Rabbi la ilaha illa anta, khalaqtani wa ana 'abduka, wa ana 'ala 'ahdika wa wa'dika mastata'tu, a'udhu bika min sharri ma sana'tu, abu'u laka bini'matika 'alayya, wa abu'u laka bidhanbi faghfirli, fa innahu la yaghfirudh-dhunuba illa anta.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have committed. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for verily none can forgive sins except You.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua When Waking Up</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Alhamdu lillahil-ladhi ahyana ba'da ma amatana wa ilayhin-nushur.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">All praise is for Allah who gave us life after having taken it from us and unto Him is the resurrection.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua Before Sleeping</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Bismika Allahumma amutu wa ahya.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">In Your name O Allah, I live and die.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Protection from Debt & Oppression</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنْ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنْ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma inni a'udhu bika minal-hammi wal-hazan, wa a'udhu bika minal-'ajzi wal-kasal, wa a'udhu bika minal-jubni wal-bukhl, wa a'udhu bika min ghalabatid-dayni wa qahrir-rijal.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, I seek refuge in You from anxiety and sorrow, weakness and laziness, miserliness and cowardice, the burden of debts and from being overpowered by men.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for a Righteous Family</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّٰتِنَا قُرَّةَ أَعْيُنٍ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Rabbana hab lana min azwajina wa dhurriyatina qurrata a'yunin waj'alna lil-muttaqina imama.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Success in Any Task</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي يَفْقَهُوا قَوْلِي</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Rabbi ishrah lee sadree, wa yassir lee amree, wahlul 'uqdatan min lisanee, yafqahoo qawlee.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">My Lord, expand for me my breast [with assurance], ease for me my task, and untie the knot from my tongue, that they may understand my speech.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for a Good End (Husn al-Khatimah)</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ اجْعَلْ خَيْرَ عُمْرِي آخِرَهُ، وَخَيْرَ عَمَلِي خَوَاتِمَهُ، وَخَيْرَ أَيَّامِي يَوْمَ أَلْقَاكَ فِيهِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma-j'al khayra 'umri akhirahu, wa khayra 'amali khawatimahu, wa khayra ayyami yawma alqaka fih.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, make the end of my life the best part of my life, my best deeds my last ones, and the best of my days the day I meet You.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Uniting Hearts (Love & Harmony)</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ أَلِّفْ بَيْنَ قُلُوبِنَا، وَأَصْلِحْ ذَاتَ بَيْنِنَا، وَاهْدِنَا سُبُلَ السَّلَامِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma allif bayna qulubina, wa aslih dhata baynina, wahdina subul as-salam.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, unite our hearts, rectify our affairs, and guide us to the paths of peace.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Exams and Seeking Beneficial Knowledge</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ انْفَعْنِي بِمَا عَلَّمْتَنِي، وَعَلِّمْنِي مَا يَنْفَعُنِي، وَزِدْنِي عِلْمًا</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma-infa'ni bima 'allamtani, wa 'allimni ma yanfa'uni, wa zidni 'ilma.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, benefit me with what You have taught me, teach me what will benefit me, and increase me in knowledge.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Protection from Hardship</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ جَهْدِ الْبَلَاءِ، وَدَرَكِ الشَّقَاءِ، وَسُوءِ الْقَضَاءِ، وَشَمَاتَةِ الْأَعْدَاءِ</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma inni a'udhu bika min jahdil-bala', wa darakish-shaqa', wa su'il-qada', wa shamatatil-a'da'.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, I seek refuge in You from the severity of calamity, from a bad end, from a bad fate, and from the gloating of enemies.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Dua for Well-being in All Affairs</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text">اللَّهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي، وَأَصْلِحْ لِي دُنْيَايَ الَّتِي فِيهَا مَعَاشِي، وَأَصْلِحْ لِي آخِرَتِي الَّتِي فِيهَا مَعَادِي</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">Allahumma aslih li deeni alladhi huwa 'ismatu amri, wa aslih li dunyaya allati feeha ma'ashi, wa aslih li akhirati allati feeha ma'adi.</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">O Allah, set right for me my religion which is the safeguard of my affairs, and set right for me my worldly affairs in which is my living, and set right for me my Hereafter to which is my return.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-results" class="no-results">
+                    <h3>No Duas Found</h3>
+                    <p>Your search did not match any supplications. Please try a different keyword.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="material-icons">dashboard</i>
+            <span>Home</span>
+        </a>
+        <a href="surahs.html" class="bottom-nav-item">
+            <i class="material-icons">menu_book</i>
+            <span>Surahs</span>
+        </a>
+        <a href="dhikr.html" class="bottom-nav-item">
+            <i class="material-icons">all_inclusive</i>
+            <span>Dhikr</span>
+        </a>
+        <a href="duas.html" class="bottom-nav-item active">
+            <i class="material-icons">pan_tool</i>
+            <span>Duas</span>
+        </a>
+        <a href="asma-ul-husna.html" class="bottom-nav-item">
+            <i class="material-icons">view_module</i>
+            <span>Names</span>
+        </a>
+    </nav>
+
+    <script>
+        // --- 6. JavaScript for Interactivity ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+
+            function closeDrawer() {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('open');
+            }
+
+            function openDrawer() {
+                sidebar.classList.add('open');
+                backdrop.classList.add('open');
+            }
+
+            menuButton.addEventListener('click', function() {
+                // Toggle drawer
+                if (sidebar.classList.contains('open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+
+            backdrop.addEventListener('click', function() {
+                closeDrawer();
+            });
+
+            // --- Search Functionality ---
+            const searchInput = document.getElementById('search-input');
+            const contentGrid = document.getElementById('content-grid');
+            const cards = contentGrid.getElementsByClassName('card');
+            const noResults = document.getElementById('no-results');
+            const searchClearBtn = document.getElementById('search-clear-btn');
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                let found = false;
+                searchClearBtn.style.display = filter ? 'block' : 'none';
+
+                for (let i = 0; i < cards.length; i++) {
+                    const cardText = cards[i].textContent || cards[i].innerText;
+                    if (cardText.toLowerCase().indexOf(filter) > -1) {
+                        cards[i].style.display = "";
+                        found = true;
+                    } else {
+                        cards[i].style.display = "none";
+                    }
+                }
+
+                noResults.style.display = found ? "none" : "block";
+            });
+
+            searchClearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                // Trigger the keyup event to reset the search
+                searchInput.dispatchEvent(new KeyboardEvent('keyup', {'bubbles': true}));
+            });
+
+            // --- Copy to Clipboard Functionality ---
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent card hover effects if needed
+                    const card = this.closest('.card');
+                    const arabicText = card.querySelector('.arabic-text').innerText;
+                    
+                    navigator.clipboard.writeText(arabicText).then(() => {
+                        // Provide feedback
+                        const originalIcon = this.innerHTML;
+                        this.innerHTML = `<span class="copy-feedback">Copied!</span>`;
+                        
+                        // Revert back after a delay
+                        setTimeout(() => {
+                            this.innerHTML = originalIcon;
+                        }, 1500);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

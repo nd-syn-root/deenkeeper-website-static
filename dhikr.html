@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhikr - Islamic Dashboard</title>
+
+    <!-- Google Fonts: Poppins & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* --- 1. Theming and Base Styles --- */
+        :root {
+            --primary-color: #264653; /* Charcoal Blue */
+            --primary-dark: #1a3038;
+            --secondary-color: #e9c46a; /* Soft Gold */
+            --background-default: #f8f9fa;
+            --background-paper: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-on-primary: #ffffff;
+            --shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --sidebar-width: 240px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-default);
+            color: var(--text-primary);
+        }
+
+        /* --- 2. Main Layout --- */
+        .app-container {
+            display: flex;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            margin-left: var(--sidebar-width); /* Space for desktop sidebar */
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 64px;
+            background-color: var(--background-paper);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+        }
+
+        .top-bar .menu-button {
+            display: none; /* Hidden on desktop */
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        /* This pushes content below the fixed top-bar */
+        .toolbar-spacer {
+            height: 64px;
+        }
+
+        /* --- 3. Sidebar / Drawer --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-dark);
+            color: var(--text-on-primary);
+            z-index: 1200;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            height: 64px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-on-primary);
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .nav-item .material-icons {
+            margin-right: 24px;
+        }
+
+        /* --- 4. Content Cards --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr; /* Default for single column */
+            gap: 24px;
+        }
+
+        .card {
+            background: linear-gradient(var(--background-paper), var(--background-paper)) padding-box, 
+                      linear-gradient(160deg, #e9c46a40, #26465360) border-box;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* Needed for copy button positioning */
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 12px 32px rgba(38, 70, 83, 0.08);
+        }
+
+        .hero-card {
+            background-color: var(--primary-color);
+            color: var(--text-on-primary);
+            position: relative;
+            overflow: hidden;
+            /* Subtle geometric pattern */
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.05) 25%, transparent 25%), linear-gradient(225deg, rgba(255,255,255,0.05) 25%, transparent 25%), linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%), linear-gradient(315deg, rgba(255,255,255,0.05) 25%, transparent 25%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 0, 20px 20px, 20px 20px;
+            border: 2px solid transparent;
+        }
+
+        .hero-card p {
+            opacity: 0.9;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .quote {
+            font-style: italic;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .arabic-text {
+            font-size: 1.5rem;
+            direction: rtl;
+            margin-bottom: 1rem;
+            line-height: 2.8rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 28px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        /* A new grid class for two columns on desktop */
+        @media (min-width: 900px) {
+            .grid-2-cols {
+                /* A more responsive grid that adapts to screen size */
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            }
+        }
+
+        /* Copy Button Styles */
+        .copy-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        .card:hover .copy-btn {
+            background-color: rgba(0,0,0,0.08);
+        }
+        .copy-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+        }
+        .copy-feedback {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Search Bar Styles */
+        .search-bar-wrapper {
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 50px; /* Increased padding for better spacing */
+            border-radius: 12px;
+            border: none; /* Removed border for a cleaner look */
+            font-size: 1rem;
+            background-color: #f0f2f5; /* Slightly different background */
+            transition: box-shadow 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(38, 70, 83, 0.1);
+        }
+        .search-input::placeholder {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-secondary);
+        }
+        .search-bar-wrapper .material-icons:not(.search-clear-btn) {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .search-clear-btn {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+        .no-results {
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        .content-section {
+            margin-bottom: 1rem;
+        }
+
+        .prayer-times-list {
+            list-style: none;
+        }
+
+        .prayer-times-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .prayer-times-list li:last-child {
+            border-bottom: none;
+        }
+
+        .prayer-times-list .time {
+            font-weight: 700;
+        }
+
+        /* --- 5. Mobile Responsiveness --- */
+        .mobile-drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+        }
+        
+        .bottom-nav {
+            display: none; /* Hidden on desktop */
+        }
+
+        /* Styles for screens smaller than 900px */
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0; /* Full width content */
+                padding-bottom: 80px; /* Space for bottom nav */
+            }
+
+            .top-bar {
+                left: 0; /* Full width top bar */
+            }
+
+            .top-bar .menu-button {
+                display: block; /* Show hamburger menu */
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-drawer-backdrop.open {
+                display: block;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 56px;
+                background-color: var(--background-paper);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-decoration: none;
+            }
+            
+            .bottom-nav-item.active {
+                color: var(--primary-color);
+            }
+
+            .bottom-nav-item .material-icons {
+                margin-bottom: 4px;
+            }
+        }
+        
+        /* Further adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px;
+                padding-bottom: 80px;
+            }
+            .top-bar {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar (Desktop) / Drawer (Mobile) -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Guidance</h2>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="index.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+                <li class="nav-item"><a href="surahs.html"><i class="material-icons">menu_book</i> Surahs</a></li>
+                <li class="nav-item"><a href="dhikr.html" class="active"><i class="material-icons">all_inclusive</i> Dhikr</a></li>
+                <li class="nav-item"><a href="duas.html"><i class="material-icons">pan_tool</i> Duas</a></li>
+                <li class="nav-item"><a href="asma-ul-husna.html"><i class="material-icons">view_module</i> Asma ul Husna</a></li>
+            </ul>
+        </nav>
+
+        <!-- Backdrop for mobile drawer -->
+        <div class="mobile-drawer-backdrop" id="backdrop"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+                <h1>Remembrances (Dhikr)</h1>
+            </header>
+            <div class="toolbar-spacer"></div>
+
+            <!-- Search Bar -->
+            <div class="search-bar-wrapper">
+                <i class="material-icons">search</i>
+                <input type="text" id="search-input" class="search-input" placeholder="Search for a Dhikr...">
+                <span class="material-icons search-clear-btn" id="search-clear-btn">close</span>
+            </div>
+
+            <!-- Dhikr Section -->
+            <section class="content-section-wrapper">
+                <h2 class="section-title">Library of Remembrances</h2>
+                <div id="content-grid" class="grid-container grid-2-cols">
+                    <div class="card hero-card" id="featured-dhikr-card">
+                        <h3>Featured Dhikr</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                         <p class="arabic-text" id="featured-dhikr-arabic"></p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote" id="featured-dhikr-translit"></p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote" id="featured-dhikr-meaning"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-results" class="no-results">
+                    <h3>No Dhikr Found</h3>
+                    <p>Your search did not match any remembrances. Please try a different keyword.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="material-icons">dashboard</i>
+            <span>Home</span>
+        </a>
+        <a href="surahs.html" class="bottom-nav-item">
+            <i class="material-icons">menu_book</i>
+            <span>Surahs</span>
+        </a>
+        <a href="dhikr.html" class="bottom-nav-item active">
+            <i class="material-icons">all_inclusive</i>
+            <span>Dhikr</span>
+        </a>
+        <a href="duas.html" class="bottom-nav-item">
+            <i class="material-icons">pan_tool</i>
+            <span>Duas</span>
+        </a>
+        <a href="asma-ul-husna.html" class="bottom-nav-item">
+            <i class="material-icons">view_module</i>
+            <span>Names</span>
+        </a>
+    </nav>
+
+    <script>
+        // --- 6. JavaScript for Interactivity ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+
+            function closeDrawer() {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('open');
+            }
+
+            function openDrawer() {
+                sidebar.classList.add('open');
+                backdrop.classList.add('open');
+            }
+
+            menuButton.addEventListener('click', function() {
+                // Toggle drawer
+                if (sidebar.classList.contains('open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+
+            backdrop.addEventListener('click', function() {
+                closeDrawer();
+            });
+
+            // --- Dhikr Library ---
+            const dhikrLibrary = [
+                { title: 'Two Praises Loved by Allah', arabic: 'سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ، سُبْحَانَ ٱللَّٰهِ ٱلْعَظِيمِ', translit: 'SubhanAllahi wa bihamdihi, SubhanAllahil \'adheem.', meaning: 'Glory is to Allah and all praise is to Him, Glory is to Allah the great.' },
+                { title: 'A Treasure from Paradise', arabic: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِٱللَّٰهِ', translit: 'La hawla wa la quwwata illa billah.', meaning: 'There is no power and no strength except with Allah.' },
+                { title: 'Master of Forgiveness', arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ...', translit: 'Allahumma anta Rabbi la ilaha illa anta...', meaning: 'The Master of Forgiveness (Sayyid al-Istighfar). O Allah, You are my Lord...' },
+                { title: 'Dua of Prophet Yunus (AS)', arabic: 'لَّآ إِلَٰهَ إِلَّآ أَنتَ سُبْحَٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّٰلِمِينَ', translit: 'La ilaha illa anta subhanaka inni kuntu minaz-zalimin.', meaning: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.' },
+                { title: 'Seeking Forgiveness', arabic: 'أَسْتَغْفِرُ ٱللَّٰهَ ٱلَّذِي لَا إِلَٰهَ إِلَّا هُوَ ٱلْحَيُّ ٱلْقَيُّومُ وَأَتُوبُ إِلَيْهِ', translit: 'Astaghfirullahal-ladhi la ilaha illa Huwal-Hayyul-Qayyum wa atubu ilaih.', meaning: 'I seek the forgiveness of Allah, whom there is none worthy of worship except Him, the Living, the Eternal, and I repent unto Him.' },
+                { title: 'Salawat upon the Prophet (ﷺ)', arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ', translit: 'Allahumma salli \'ala Muhammadin wa \'ala aali Muhammad.', meaning: 'O Allah, send your blessings upon Muhammad and the family of Muhammad.' },
+                { title: 'Praise Equal to Creation', arabic: 'سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ عَدَدَ خَلْقِهِ وَرِضَا نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ', translit: 'SubhanAllahi wa bihamdihi, \'adada khalqihi, wa rida nafsihi, wa zinata \'arshihi, wa midada kalimatihi.', meaning: 'Glory is to Allah and praise is to Him, by the multitude of his creation, by His Pleasure, by the weight of His Throne, and by the extent of His Words.' },
+                { title: 'Morning & Evening Dhikr', arabic: 'بِسْمِ ٱللَّٰهِ ٱلَّذِي لَا يَضُرُّ مَعَ ٱسْمِهِ شَيْءٌ فِي ٱلْأَرْضِ وَلَا فِي ٱلسَّمَاءِ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ', translit: 'Bismillahil-ladhi la yadurru ma\'asmihi shay\'un fil-ardi wa la fis-sama\'i wa Huwas-Sami\'ul-\'Alim.', meaning: 'In the Name of Allah, with Whose Name nothing on the earth or in the heaven can cause harm, and He is the All-Hearing, the All-Knowing.' }
+            ];
+
+            function populateDhikrLibrary() {
+                const grid = document.getElementById('content-grid');
+                grid.innerHTML = ''; // Clear existing content
+
+                dhikrLibrary.forEach(dhikr => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${dhikr.title}</h3>
+                        <button class="copy-btn">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                        <p class="arabic-text">${dhikr.arabic}</p>
+                        <div class="content-section">
+                            <h4>Transliteration</h4>
+                            <p class="quote">${dhikr.translit}</p>
+                        </div>
+                        <div class="content-section">
+                            <h4>Meaning</h4>
+                            <p class="quote">${dhikr.meaning}</p>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            populateDhikrLibrary();
+
+            // --- Search Functionality ---
+            const searchInput = document.getElementById('search-input');
+            const contentGrid = document.getElementById('content-grid');
+            const cards = contentGrid.getElementsByClassName('card');
+            const noResults = document.getElementById('no-results');
+            const searchClearBtn = document.getElementById('search-clear-btn');
+
+            // Re-attach copy listeners after populating
+            attachCopyListeners();
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                searchClearBtn.style.display = filter ? 'block' : 'none';
+                let found = false;
+
+                for (let i = 0; i < cards.length; i++) {
+                    const cardText = cards[i].textContent || cards[i].innerText;
+                    if (cardText.toLowerCase().indexOf(filter) > -1) {
+                        cards[i].style.display = "";
+                        found = true;
+                    } else {
+                        cards[i].style.display = "none";
+                    }
+                }
+
+                noResults.style.display = found ? "none" : "block";
+            });
+
+            searchClearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                // Trigger the keyup event to reset the search
+                searchInput.dispatchEvent(new KeyboardEvent('keyup', {'bubbles': true}));
+            });
+
+            // --- Copy to Clipboard Functionality ---
+            function attachCopyListeners() {
+                document.querySelectorAll('.copy-btn').forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Prevent card hover effects if needed
+                        const card = this.closest('.card');
+                        const arabicText = card.querySelector('.arabic-text').innerText;
+                        
+                        navigator.clipboard.writeText(arabicText).then(() => {
+                            // Provide feedback
+                            const originalIcon = this.innerHTML;
+                            this.innerHTML = `<span class="copy-feedback">Copied!</span>`;
+                            
+                            // Revert back after a delay
+                            setTimeout(() => {
+                                this.innerHTML = originalIcon;
+                            }, 1500);
+                        });
+                    });
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Dashboard</title>
+
+    <!-- Google Fonts: Poppins & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* --- 1. Theming and Base Styles --- */
+        :root {
+            --primary-color: #264653; /* Charcoal Blue */
+            --primary-dark: #1a3038;
+            --secondary-color: #e9c46a; /* Soft Gold */
+            --background-default: #f8f9fa;
+            --background-paper: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-on-primary: #ffffff;
+            --shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --sidebar-width: 240px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-default);
+            color: var(--text-primary);
+        }
+
+        /* --- 2. Main Layout --- */
+        .app-container {
+            display: flex;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            margin-left: var(--sidebar-width); /* Space for desktop sidebar */
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 64px;
+            background-color: var(--background-paper);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+        }
+
+        .top-bar .menu-button {
+            display: none; /* Hidden on desktop */
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        /* This pushes content below the fixed top-bar */
+        .toolbar-spacer {
+            height: 64px;
+        }
+
+        /* --- 3. Sidebar / Drawer --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-dark);
+            color: var(--text-on-primary);
+            z-index: 1200;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            height: 64px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-on-primary);
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .nav-item .material-icons {
+            margin-right: 24px;
+        }
+
+        /* --- 4. Content Cards --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr; /* Default for single column */
+            gap: 24px;
+        }
+
+        /* A new grid class for two columns on desktop */
+        @media (min-width: 900px) {
+            .grid-2-cols {
+                grid-template-columns: 1fr 1fr;
+            }
+            /* A more intentional grid for the dashboard on larger screens */
+            .grid-dashboard {
+                grid-template-columns: 1fr 1fr;
+                align-items: flex-start;
+            }
+            .dhikr-counter-card {
+                /* This makes the Dhikr card span all rows in its column */
+                grid-column: 1 / 2;
+                grid-row: 1 / 4;
+                min-height: 450px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .grid-dashboard {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: linear-gradient(var(--background-paper), var(--background-paper)) padding-box, 
+                      linear-gradient(160deg, #e9c46a40, #26465360) border-box;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* Needed for copy button positioning */
+        }
+        
+        .card.nav-card {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 12px 32px rgba(38, 70, 83, 0.08);
+        }
+
+        .hero-card {
+            background-color: var(--primary-color);
+            color: var(--text-on-primary);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(rgba(38, 70, 83, 0.85), rgba(38, 70, 83, 0.85)), url('https://images.unsplash.com/photo-1555633962-b42a093a2614?q=80&w=1974&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            border: 2px solid transparent; /* Match card border width */
+        }
+
+        .hero-card p {
+            opacity: 0.9;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .quote {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .arabic-text {
+            font-size: 1.5rem;
+            direction: rtl;
+            margin-bottom: 1rem;
+            line-height: 2.8rem;
+        }
+
+        .welcome-banner h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .welcome-banner {
+            background-color: var(--background-paper);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .welcome-banner .islamic-date {
+            font-size: 1.1rem;
+            margin-top: 8px;
+            color: var(--text-secondary);
+        }
+
+        .nav-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            width: 100%;
+        }
+
+        .nav-card .material-icons {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .nav-card-link .go-to-section {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: auto; /* Pushes the link to the bottom */
+            padding-top: 1rem;
+            transition: color 0.2s ease;
+        }
+        .nav-card:hover .go-to-section {
+            color: var(--secondary-color);
+        }
+
+        /* Copy Button Styles */
+        .copy-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        .card:hover .copy-btn {
+            background-color: rgba(0,0,0,0.08);
+        }
+        .copy-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+        }
+        .copy-feedback {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Styles for the new Dhikr Counter */
+        .dhikr-counter-card {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dhikr-counter-display {
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            line-height: 1;
+        }
+
+        .dhikr-tap-area {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 24px auto;
+            transition: background-color 0.2s ease;
+        }
+
+        .dhikr-tap-area.active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        .dhikr-tap-area:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .dhikr-control-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            text-decoration: none; /* Remove underline */
+        }
+
+        .dhikr-progress-text {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        .dhikr-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .dhikr-control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+
+        /* --- Dhikr Dropdown Styles --- */
+        .dhikr-select-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+        .dhikr-select-trigger {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+        .dhikr-select-trigger:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .dhikr-options {
+            visibility: hidden; /* Use visibility for transitions */
+            opacity: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #3a5a68; /* Slightly lighter than primary-dark */
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            list-style: none;
+            margin-top: 8px;
+            z-index: 10;
+            max-height: 250px; /* Limit height to prevent going off-screen */
+            overflow-y: auto; /* Enable scrolling when needed */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+        }
+        .dhikr-options.open {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dhikr-options li {
+            padding: 12px 16px;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .dhikr-options li:last-child {
+            border-bottom: none;
+        }
+
+        .dhikr-options li:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* --- Custom Scrollbar for Dhikr Dropdown --- */
+        .dhikr-options::-webkit-scrollbar {
+            width: 8px;
+        }
+        .dhikr-options::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dhikr-options::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        .dhikr-options::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dhikr-control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+
+        /* --- Modal Styles --- */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-backdrop.open {
+            display: block;
+            opacity: 1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: var(--background-paper);
+            padding: 32px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 2001;
+            width: 90%;
+            max-width: 400px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .modal.open {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .modal p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(38, 70, 83, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .content-section {
+            margin-bottom: 1rem;
+        }
+
+        .prayer-times-list {
+            list-style: none;
+        }
+
+        .prayer-times-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .prayer-times-list li:last-child {
+            border-bottom: none;
+        }
+
+        .prayer-times-list .time {
+            font-weight: 700;
+        }
+
+        /* --- 5. Mobile Responsiveness --- */
+        .mobile-drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+        }
+        
+        .bottom-nav {
+            display: none; /* Hidden on desktop */
+        }
+
+        /* Styles for screens smaller than 900px */
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0; /* Full width content */
+                padding-bottom: 80px; /* Space for bottom nav */
+            }
+
+            .top-bar {
+                left: 0; /* Full width top bar */
+            }
+
+            .top-bar .menu-button {
+                display: block; /* Show hamburger menu */
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .mobile-drawer-backdrop.open {
+                display: block;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 56px;
+                background-color: var(--background-paper);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-decoration: none;
+            }
+            
+            .bottom-nav-item.active {
+                color: var(--primary-color);
+            }
+
+            .bottom-nav-item .material-icons {
+                margin-bottom: 4px;
+            }
+        }
+        
+        /* Further adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px;
+                padding-bottom: 80px;
+            }
+            .top-bar {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar (Desktop) / Drawer (Mobile) -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Guidance</h2>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="index.html" class="active"><i class="material-icons">dashboard</i> Dashboard</a></li>
+                <li class="nav-item"><a href="surahs.html"><i class="material-icons">menu_book</i> Surahs</a></li>
+                <li class="nav-item"><a href="dhikr.html"><i class="material-icons">all_inclusive</i> Dhikr</a></li>
+                <li class="nav-item"><a href="duas.html"><i class="material-icons">pan_tool</i> Duas</a></li>
+                <li class="nav-item"><a href="asma-ul-husna.html"><i class="material-icons">view_module</i> Asma ul Husna</a></li>
+            </ul>
+        </nav>
+
+        <!-- Backdrop for mobile drawer -->
+        <div class="mobile-drawer-backdrop" id="backdrop"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+                <h1>Dashboard</h1>
+            </header>
+            <div class="toolbar-spacer"></div>
+
+            <div class="welcome-banner" style="margin-bottom: 32px;">
+                <h2>As-salamu alaykum!</h2>
+                <p class="islamic-date">14th Ramadan, 1445 AH</p> <!-- This is a placeholder date -->
+            </div>
+
+            <!-- Main Grid for Widgets -->
+            <div class="grid-container grid-dashboard">
+
+                <!-- Interactive Dhikr Counter -->
+                <div class="card hero-card dhikr-counter-card" style="grid-column: 1 / -1; min-height: 450px;">
+                    <div class="dhikr-select-wrapper">
+                        <div id="dhikr-select-trigger" class="dhikr-select-trigger">
+                            <span id="selected-dhikr-text"></span>
+                            <i class="material-icons">arrow_drop_down</i>
+                        </div>
+                        <ul id="dhikr-options" class="dhikr-options"></ul>
+                    </div>
+                    <p id="dhikr-arabic" class="arabic-text" style="font-size: 2rem; margin: 0;"></p>
+                    <p id="dhikr-translit" style="margin-top:0; opacity: 0.8;"></p>
+                    <div class="dhikr-tap-area" id="dhikr-tap-area">
+                        <span id="dhikr-count" class="dhikr-counter-display">0</span>
+                    </div>
+                    <div id="dhikr-progress-text" class="dhikr-progress-text">0 / 100</div>
+                    <div class="dhikr-controls">
+                        <button id="dhikr-target-btn" class="dhikr-control-btn">Set Target</button>
+                        <button id="dhikr-reset-btn" class="dhikr-control-btn">Reset Count</button>
+                    </div>
+                </div>
+
+                <!-- Surahs Navigation Card -->
+                <a href="surahs.html" class="nav-card-link">
+                    <div class="card nav-card">
+                        <i class="material-icons">menu_book</i>
+                        <h3>Featured Surahs</h3>
+                        <p>Explore powerful Surahs from the Holy Quran.</p>
+                        <span class="go-to-section">Go to Surahs →</span>
+                    </div>
+                </a>
+
+                <!-- Dhikr Navigation Card -->
+                <a href="dhikr.html" class="nav-card-link">
+                    <div class="card nav-card">
+                        <i class="material-icons">all_inclusive</i>
+                        <h3>Remembrances</h3>
+                        <p>Engage in Dhikr with this collection of remembrances.</p>
+                        <span class="go-to-section">Go to Dhikr →</span>
+                    </div>
+                </a>
+
+                <!-- Duas Navigation Card -->
+                <a href="duas.html" class="nav-card-link">
+                    <div class="card nav-card">
+                        <i class="material-icons">pan_tool</i>
+                        <h3>Supplications</h3>
+                        <p>Find powerful Duas for various occasions.</p>
+                        <span class="go-to-section">Go to Duas →</span>
+                    </div>
+                </a>
+
+                <!-- Asma ul Husna Navigation Card -->
+                <a href="asma-ul-husna.html" class="nav-card-link">
+                    <div class="card nav-card">
+                        <i class="material-icons">view_module</i>
+                        <h3>Asma ul Husna</h3>
+                        <p>Learn the 99 Beautiful Names of Allah.</p>
+                        <span class="go-to-section">Go to Names →</span>
+                    </div>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item active">
+            <i class="material-icons">dashboard</i>
+            <span>Home</span>
+        </a>
+        <a href="surahs.html" class="bottom-nav-item">
+            <i class="material-icons">menu_book</i>
+            <span>Surahs</span>
+        </a>
+        <a href="dhikr.html" class="bottom-nav-item">
+            <i class="material-icons">all_inclusive</i>
+            <span>Dhikr</span>
+        </a>
+        <a href="duas.html" class="bottom-nav-item">
+            <i class="material-icons">pan_tool</i>
+            <span>Duas</span>
+        </a>
+        <a href="asma-ul-husna.html" class="bottom-nav-item">
+            <i class="material-icons">view_module</i>
+            <span>Names</span>
+        </a>
+    </nav>
+
+    <!-- Modal for setting Dhikr target -->
+    <div id="target-modal-backdrop" class="modal-backdrop"></div>
+    <div id="target-modal" class="modal">
+        <h3>Set Dhikr Target</h3>
+        <p>Enter the number you want to count to.</p>
+        <input type="number" id="target-input" class="modal-input" placeholder="e.g., 100" min="1">
+        <div class="modal-actions">
+            <button id="modal-cancel-btn" class="dhikr-control-btn" style="background-color: #eee; color: var(--text-secondary); border-color: #ddd;">Cancel</button>
+            <button id="modal-save-btn" class="dhikr-control-btn" style="background-color: var(--primary-color); color: white;">Save Target</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 6. JavaScript for Interactivity ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+
+            function closeDrawer() {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('open');
+            }
+
+            function openDrawer() {
+                sidebar.classList.add('open');
+                backdrop.classList.add('open');
+            }
+
+            menuButton.addEventListener('click', function() {
+                // Toggle drawer
+                if (sidebar.classList.contains('open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+
+            backdrop.addEventListener('click', function() {
+                closeDrawer();
+            });
+
+            // --- Flexible JavaScript for Dhikr Counter ---
+            const tapArea = document.getElementById('dhikr-tap-area');
+            const countDisplay = document.getElementById('dhikr-count');
+            const resetButton = document.getElementById('dhikr-reset-btn');
+            const targetButton = document.getElementById('dhikr-target-btn');
+            const dhikrProgressText = document.getElementById('dhikr-progress-text');
+            const modalBackdrop = document.getElementById('target-modal-backdrop');
+            const modal = document.getElementById('target-modal');
+            const targetInput = document.getElementById('target-input');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            const modalSaveBtn = document.getElementById('modal-save-btn');
+            const dhikrArabic = document.getElementById('dhikr-arabic');
+            const dhikrTranslit = document.getElementById('dhikr-translit');
+            const selectedDhikrText = document.getElementById('selected-dhikr-text');
+            const dhikrSelectTrigger = document.getElementById('dhikr-select-trigger');
+            const dhikrOptions = document.getElementById('dhikr-options');
+
+            const DHIKR_OPTIONS = [
+                { arabic: 'سُبْحَانَ ٱللَّٰهِ', transliteration: 'SubhanAllah' }, // Glory be to Allah
+                { arabic: 'ٱلْحَمْدُ لِلَّٰهِ', transliteration: 'Alhamdulillah' }, // Praise be to Allah
+                { arabic: 'ٱللَّٰهُ أَكْبَرُ', transliteration: 'Allahu Akbar' }, // Allah is the Greatest
+                { arabic: 'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ', transliteration: 'La ilaha illAllah' }, // There is no god but Allah
+                { arabic: 'أَسْتَغْفِرُ ٱللَّٰهَ', transliteration: 'Astaghfirullah' }, // I seek forgiveness from Allah
+                { arabic: 'سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ', transliteration: 'SubhanAllahi wa bihamdihi' }, // Glory be to Allah and praise Him
+                { arabic: 'سُبْحَانَ ٱللَّٰهِ ٱلْعَظِيمِ', transliteration: 'SubhanAllahil \'adheem' }, // Glory be to Allah, the Magnificent
+                { arabic: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِٱللَّٰهِ', transliteration: 'La hawla wa la quwwata illa billah' }, // There is no power nor strength except with Allah
+                { arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ', transliteration: 'Allahumma salli \'ala Muhammad' }, // O Allah, send blessings upon Muhammad
+                { arabic: 'لَّآ إِلَٰهَ إِلَّآ أَنتَ سُبْحَٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّٰلِمِينَ', transliteration: 'Dua of Yunus (AS)' }, // Dua of Prophet Yunus
+                { arabic: 'سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ، سُبْحَانَ ٱللَّٰهِ ٱلْعَظِيمِ', transliteration: 'Two Praises of Allah' } // Two praises loved by Allah
+            ];
+
+            let count = 0;
+            let target = 100;
+            let selectedDhikrIndex = 0;
+
+            function updateUI() {
+                const currentDhikr = DHIKR_OPTIONS[selectedDhikrIndex];
+                dhikrArabic.textContent = currentDhikr.arabic;
+                dhikrTranslit.textContent = `(${currentDhikr.transliteration})`;
+                selectedDhikrText.textContent = currentDhikr.transliteration;
+
+                countDisplay.textContent = count;
+                dhikrProgressText.textContent = `${count} / ${target}`;
+
+                // Save progress
+                localStorage.setItem('dhikr_count', count);
+                localStorage.setItem('dhikr_target', target);
+                localStorage.setItem('dhikr_index', selectedDhikrIndex);
+            }
+
+            tapArea.addEventListener('click', function() {
+                if (count < target) {
+                    count++;
+                    updateUI();
+                }
+
+                // Visual and haptic feedback
+                tapArea.classList.add('active');
+                if (navigator.vibrate) navigator.vibrate(50);
+                setTimeout(() => tapArea.classList.remove('active'), 100);
+            });
+
+            resetButton.addEventListener('click', function() {
+                count = 0;
+                updateUI();
+            });
+
+            targetButton.addEventListener('click', function() {
+                targetInput.value = target;
+                modal.classList.add('open');
+                modalBackdrop.classList.add('open');
+            });
+
+            function closeModal() {
+                modal.classList.remove('open');
+                modalBackdrop.classList.remove('open');
+            }
+
+            modalCancelBtn.addEventListener('click', closeModal);
+            modalBackdrop.addEventListener('click', closeModal);
+
+            modalSaveBtn.addEventListener('click', function() {
+                const newTarget = parseInt(targetInput.value);
+                if (!isNaN(newTarget) && newTarget > 0) {
+                    target = newTarget;
+                    if (count > target) { // Reset count if it's higher than the new target
+                        count = 0;
+                    }
+                    updateUI();
+                    closeModal();
+                }
+            });
+
+            // --- Dhikr Selection Logic ---
+            function populateDhikrOptions() {
+                dhikrOptions.innerHTML = '';
+                DHIKR_OPTIONS.forEach((option, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = option.transliteration;
+                    li.dataset.index = index;
+                    li.addEventListener('click', () => {
+                        selectedDhikrIndex = index;
+                        updateUI();
+                        dhikrOptions.classList.remove('open');
+                    });
+                    dhikrOptions.appendChild(li);
+                });
+            }
+
+            dhikrSelectTrigger.addEventListener('click', () => {
+                dhikrOptions.classList.toggle('open');
+            });
+
+            // Close dropdown if clicked outside
+            window.addEventListener('click', function(e) {
+                if (!dhikrSelectTrigger.contains(e.target)) {
+                    dhikrOptions.classList.remove('open');
+                }
+            });
+
+            // Load saved progress on page load
+            count = parseInt(localStorage.getItem('dhikr_count')) || 0;
+            target = parseInt(localStorage.getItem('dhikr_target')) || 100;
+            selectedDhikrIndex = parseInt(localStorage.getItem('dhikr_index')) || 0;
+
+            if (count > target) { // In case target was lowered while count was high
+                count = 0;
+            }
+            populateDhikrOptions();
+            updateUI();
+
+            // --- Copy to Clipboard Functionality ---
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent card hover effects if needed
+                    const card = this.closest('.card');
+                    const arabicText = card.querySelector('.arabic-text').innerText;
+                    
+                    navigator.clipboard.writeText(arabicText).then(() => {
+                        // Provide feedback
+                        const originalIcon = this.innerHTML;
+                        this.innerHTML = `<span class="copy-feedback">Copied!</span>`;
+                        
+                        // Revert back after a delay
+                        setTimeout(() => {
+                            this.innerHTML = originalIcon;
+                        }, 1500);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body></html>
